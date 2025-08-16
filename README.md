@@ -1,5 +1,5 @@
 # URL shortener service
-This is a simple web server that allows you to create and use short URLs similar to [Bitly](bitly.com).
+This is a simple web server that allows you to create and use short URLs similar to [Bitly](https://bitly.com).
 Web server is built using [FastAPI](https://fastapi.tiangolo.com/), [SQLAlchemy](https://www.sqlalchemy.org/) and [SQLite](https://sqlite.org/).
 ## Installation and run
 To run the web server simply clone the repository to a machine with Docker Compose installed (I used version 2.39.1) and enter the command:
