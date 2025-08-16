@@ -1,0 +1,7 @@
+/dbs
+/logs
+/build
+/venv
+
+__pycache__
+*.egg*

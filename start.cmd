@@ -1,0 +1,1 @@
+"venv/scripts/uvicorn" finansy.url_shortener.main:app --app-dir src --reload --host 0.0.0.0 --port 5001

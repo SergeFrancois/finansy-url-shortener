@@ -1,0 +1,19 @@
+version: 1
+disable_existing_loggers: no
+formatters:
+  default:
+    format: '[%(asctime)s] [%(levelname)s] [%(thread)d] %(fullModuleName)s %(funcName)s - %(message)s'
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: default
+    level: INFO
+    stream: ext://sys.stdout
+loggers:
+  finansy:
+    handlers: [console]
+    propagate: no
+    level: INFO
+root:
+  handlers: [console]
+  level: INFO

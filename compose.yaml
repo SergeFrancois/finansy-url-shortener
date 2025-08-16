@@ -1,0 +1,15 @@
+services:
+  api:
+    container_name: url_shortener
+    restart: unless-stopped
+    build:
+      context: .
+      target: production
+    ports:
+      - 5001:5001
+    volumes:
+      - dbs:/opt/finansy/url_shortener/dbs
+    environment:
+      DB_URL: sqlite+aiosqlite:///dbs/main_db.sqlite
+volumes:
+  dbs:

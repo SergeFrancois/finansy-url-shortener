@@ -1,0 +1,3 @@
+db:
+  echo: true
+  url: sqlite+aiosqlite:///dbs/main_db.sqlite
