@@ -3,17 +3,30 @@ disable_existing_loggers: no
 formatters:
   default:
     format: '[%(asctime)s] [%(levelname)s] [%(thread)d] %(fullModuleName)s %(funcName)s - %(message)s'
+  logstash:
+    '()': logstash_async.formatter.LogstashFormatter
+    message_type: python-logstash
 handlers:
   console:
     class: logging.StreamHandler
     formatter: default
-    level: INFO
+    level: $LOGGING_LEVEL|INFO
     stream: ext://sys.stdout
+  logstash:
+    class: logstash_async.handler.AsynchronousLogstashHandler
+    formatter: logstash
+    level: $LOGGING_LEVEL|INFO
+    transport: logstash_async.transport.TcpTransport
+    host: $LOGSTASH_HOST|localhost
+    port: $LOGSTASH_PORT|5000
+    ssl_enable: false
+    database_path: dbs/logstash.db
+    enable: $LOGSTASH_ENABLED|true
 loggers:
   finansy:
-    handlers: [console]
+    handlers: [logstash, console]
     propagate: no
-    level: INFO
+    level: $LOGGING_LEVEL|INFO
 root:
-  handlers: [console]
-  level: INFO
+  handlers: [logstash, console]
+  level: $LOGGING_LEVEL|INFO

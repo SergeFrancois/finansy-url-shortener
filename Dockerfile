@@ -13,7 +13,7 @@ RUN python3.11 -m venv venv && \
     venv/bin/pip3 install uvicorn
 
 
-FROM base as production
+FROM base AS production
 
 COPY --from=builder /opt/finansy/url_shortener/venv ./venv
 COPY start.sh \

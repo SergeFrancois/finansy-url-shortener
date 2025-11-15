@@ -11,5 +11,10 @@ services:
       - dbs:/opt/finansy/url_shortener/dbs
     environment:
       DB_URL: sqlite+aiosqlite:///dbs/main_db.sqlite
+      LOGSTASH_ENABLED: ${LOGSTASH_ENABLED}
+      LOGSTASH_HOST: ${LOGSTASH_HOST}
+      LOGSTASH_PORT: ${LOGSTASH_PORT}
+      LOGSTASH_QUEUE_CHECK_INTERVAL: ${LOGSTASH_QUEUE_CHECK_INTERVAL}
+      LOGSTASH_QUEUED_EVENTS_FLUSH_INTERVAL: ${LOGSTASH_QUEUED_EVENTS_FLUSH_INTERVAL}
 volumes:
   dbs:

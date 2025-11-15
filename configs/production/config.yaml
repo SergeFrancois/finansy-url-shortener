@@ -1,2 +1,6 @@
 db:
   url: $DB_URL
+logging:
+  logstash:
+    queue_check_interval: $LOGSTASH_QUEUE_CHECK_INTERVAL|1
+    queued_events_flush_interval: $LOGSTASH_QUEUED_EVENTS_FLUSH_INTERVAL|5

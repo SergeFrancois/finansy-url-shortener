@@ -12,8 +12,20 @@ class DbConfig(BaseConfig):
     url: AnyUrl
 
 
+class LogstashConfig(BaseConfig):
+    queue_check_interval: float = 2.0
+    queued_events_flush_interval: float = 10.0
+    socket_close_wait_timeout: float = 30.0
+    socket_timeout: float = 5.0
+
+
+class LoggingConfig(BaseConfig):
+    logstash: LogstashConfig | None = None
+
+
 class Config(BaseConfig):
     db: DbConfig
+    logging: LoggingConfig | None = None
 
 
 class ConfigProxy:

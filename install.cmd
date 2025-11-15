@@ -2,4 +2,4 @@
 if not exist venv (
     python -m venv venv
 )
-"venv/Scripts/pip" install .
+"venv/Scripts/pip" install .[test,uvicorn]

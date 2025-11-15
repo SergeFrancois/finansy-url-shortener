@@ -4,14 +4,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "finansy-url-shortener"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
   "aiosqlite",
   "envyaml",
   "fastapi",
   "pydantic",
+  "python-logstash-async",
   "PyYAML",
   "SQLAlchemy"
 ]
 requires-python = ">= 3.11"
 readme = "README.md"
+
+[project.optional-dependencies]
+uvicorn = ["uvicorn"]
+test = ["pytest", "pytest-dependency"]
+
+[tool.pytest]
+minversion = "9.0"
+testpaths = ["tests"]
+required_plugins = ["pytest-dependency"]

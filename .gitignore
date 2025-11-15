@@ -2,6 +2,12 @@
 /logs
 /build
 /venv
+/~venv
 
 __pycache__
 *.egg*
+
+*.env
+*.db
+*.sqlite
+*._py

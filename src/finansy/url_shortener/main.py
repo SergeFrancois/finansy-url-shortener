@@ -1,11 +1,13 @@
 import importlib.metadata
 import logging
-import yaml
+from envyaml import EnvYAML
 from fastapi import FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
+from logstash_async import constants as logstash_constants
+from logstash_async.handler import AsynchronousLogstashHandler
 from . import constants
 from .config import config
 from .db import create_db, ensure_session_factory_initialized
@@ -40,7 +42,7 @@ app = FastAPI(
 app.include_router(api_router)
 
 
-def custom_openapi():
+def get_custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
@@ -60,7 +62,17 @@ def custom_openapi():
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
-app.openapi = custom_openapi
+app.openapi = get_custom_openapi
+
+
+def get_logstash_handler():
+    return next((
+        h
+        for _, v in  logging.Logger.manager.loggerDict.items()
+        if not isinstance(v, logging.PlaceHolder)
+        for h in v.handlers
+        if isinstance(h, AsynchronousLogstashHandler)
+    ), None)
 
 
 @app.exception_handler(RequestValidationError)
@@ -88,8 +100,7 @@ async def handle_unhandled_exception(request: Request, call_next):
 async def handle_startup_event():
     try:
         try:
-            with open(constants.LOGGING_CONFIG_PATH, 'r') as file:
-                logging_config = yaml.safe_load(file.read())
+            logging_config = EnvYAML(constants.LOGGING_CONFIG_PATH, flatten=False).export()
         except Exception as ex:
             raise Exception('Logging configuration loading failed') from ex
         logging.config.dictConfig(logging_config)
@@ -99,6 +110,20 @@ async def handle_startup_event():
             config.load()
         except Exception as ex:
             raise Exception('URL shortener service configuration loading failed') from ex
+        logstash_handler = get_logstash_handler()
+        if (
+            logstash_handler and logstash_handler._enable and
+            config.logging and config.logging.logstash
+        ):
+            for key in (
+                'SOCKET_TIMEOUT',
+                'SOCKET_CLOSE_WAIT_TIMEOUT',
+                'QUEUE_CHECK_INTERVAL',
+                'QUEUED_EVENTS_FLUSH_INTERVAL'
+            ):
+                setattr(logstash_constants,
+                        key,
+                        getattr(config.logging.logstash, key.lower()))
         await create_db()
         ensure_session_factory_initialized()
         logger.info('URL shortener service is started')
@@ -112,6 +137,7 @@ async def handle_shutdown_event():
     try:
         logger.info('URL shortener service is stopping...')
         logger.info('URL shortener service is stopped')
+        logging.shutdown()   # to flush logstash last events
     except Exception as ex:
         logger.exception('URL shortener service stopping failed')
         raise Exception('URL shortener service stopping failed') from ex
